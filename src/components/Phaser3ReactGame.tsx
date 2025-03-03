@@ -145,7 +145,7 @@ const Phaser3ReactGame: React.FC = () => {
 
                 // Left Button
                 const leftButton = this.add
-                    .text(100, buttonY, "⬅", mobileControlsConfig)
+                    .text(100, buttonY, "Left", mobileControlsConfig)
                     .setInteractive()
                     .on("pointerdown", () => {
                         leftPressed = true;
@@ -160,7 +160,7 @@ const Phaser3ReactGame: React.FC = () => {
 
                 // Right Button
                 const rightButton = this.add
-                    .text(250, buttonY, "➡", mobileControlsConfig)
+                    .text(250, buttonY, "Right", mobileControlsConfig)
                     .setInteractive()
                     .on("pointerdown", () => {
                         rightPressed = true;
@@ -178,7 +178,7 @@ const Phaser3ReactGame: React.FC = () => {
                     .text(
                         this.scale.width - 100,
                         buttonY,
-                        "⬆",
+                        "Up",
                         mobileControlsConfig
                     )
                     .setInteractive()
