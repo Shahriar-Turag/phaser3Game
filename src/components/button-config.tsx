@@ -13,3 +13,14 @@ export const buttonConfig = {
     },
 };
 
+export const mobileControlsConfig = {
+    fontSize: "32px",
+    backgroundColor: "#333",
+    color: "#fff",
+    padding: { x: 20, y: 10 },
+    fixedWidth: 60,
+    fixedHeight: 60,
+    align: "center",
+    borderRadius: 50,
+};
+

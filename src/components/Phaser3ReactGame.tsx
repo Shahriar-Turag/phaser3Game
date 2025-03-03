@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
-import { buttonConfig } from "./button-config";
+import { buttonConfig, mobileControlsConfig } from "./button-config";
 
 const Phaser3ReactGame: React.FC = () => {
     const phaserGameRef = useRef<HTMLDivElement>(null);
@@ -8,10 +8,9 @@ const Phaser3ReactGame: React.FC = () => {
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
-    // mobile control states
-    const [leftPressed, setLeftPressed] = useState(false);
-    const [rightPressed, setRightPressed] = useState(false);
-    const [jumpPressed, setJumpPressed] = useState(false);
+    let leftPressed = false;
+    let rightPressed = false;
+    let jumpPressed = false;
 
     useEffect(() => {
         let game: Phaser.Game;
@@ -136,49 +135,64 @@ const Phaser3ReactGame: React.FC = () => {
                 color: "#000",
             });
 
-            // Mobile Controls
-            const leftButton = this.add
-                .text(50, 500, "⬅", {
-                    fontSize: "32px",
-                    backgroundColor: "#000",
-                    color: "#fff",
-                })
-                .setInteractive()
-                .on("pointerdown", () => {
-                    player.setVelocityX(-160);
-                    player.anims.play("left", true);
-                })
-                .on("pointerup", () => {
-                    player.setVelocityX(0);
-                    player.anims.play("turn");
-                });
+            const isMobile = window.innerWidth <= 768;
+            console.log("isMobile", isMobile);
 
-            const rightButton = this.add
-                .text(700, 500, "➡", {
-                    fontSize: "32px",
-                    backgroundColor: "#000",
-                    color: "#fff",
-                })
-                .setInteractive()
-                .on("pointerdown", () => {
-                    player.setVelocityX(160);
-                    player.anims.play("right", true);
-                })
-                .on("pointerup", () => {
-                    player.setVelocityX(0);
-                    player.anims.play("turn");
-                });
+            if (isMobile) {
+                const buttonSize = 30;
+                const platformY = platforms.children.entries[0].y;
+                const buttonY = platformY - buttonSize - -30; // Position buttons just above the ground
 
-            const jumpButton = this.add
-                .text(375, 500, "⬆", {
-                    fontSize: "32px",
-                    backgroundColor: "#000",
-                    color: "#fff",
-                })
-                .setInteractive()
-                .on("pointerdown", () => {
-                    if (player.body?.touching.down) player.setVelocityY(-330);
-                });
+                // Left Button
+                const leftButton = this.add
+                    .text(100, buttonY, "⬅", mobileControlsConfig)
+                    .setInteractive()
+                    .on("pointerdown", () => {
+                        leftPressed = true;
+                    })
+                    .on("pointerup", () => {
+                        leftPressed = false;
+                    })
+                    .on("pointerout", () => {
+                        leftPressed = false;
+                    })
+                    .setOrigin(0.5);
+
+                // Right Button
+                const rightButton = this.add
+                    .text(250, buttonY, "➡", mobileControlsConfig)
+                    .setInteractive()
+                    .on("pointerdown", () => {
+                        rightPressed = true;
+                    })
+                    .on("pointerup", () => {
+                        rightPressed = false;
+                    })
+                    .on("pointerout", () => {
+                        rightPressed = false;
+                    })
+                    .setOrigin(0.5);
+
+                // Jump Button
+                const jumpButton = this.add
+                    .text(
+                        this.scale.width - 100,
+                        buttonY,
+                        "⬆",
+                        mobileControlsConfig
+                    )
+                    .setInteractive()
+                    .on("pointerdown", () => {
+                        jumpPressed = true;
+                    })
+                    .on("pointerup", () => {
+                        jumpPressed = false;
+                    })
+                    .on("pointerout", () => {
+                        jumpPressed = false;
+                    })
+                    .setOrigin(0.5);
+            }
         }
 
         function update() {
@@ -194,10 +208,11 @@ const Phaser3ReactGame: React.FC = () => {
             }
 
             if (
-                cursors.up?.isDown ||
-                (jumpPressed && player.body?.touching.down)
+                (cursors.up?.isDown || jumpPressed) &&
+                player.body?.touching.down
             ) {
                 player.setVelocityY(-330);
+                jumpPressed = false; // Prevents multiple jumps while holding
             }
         }
 
