@@ -8,6 +8,11 @@ const Phaser3ReactGame: React.FC = () => {
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
 
+    // mobile control states
+    const [leftPressed, setLeftPressed] = useState(false);
+    const [rightPressed, setRightPressed] = useState(false);
+    const [jumpPressed, setJumpPressed] = useState(false);
+
     useEffect(() => {
         let game: Phaser.Game;
         let internalScore = 0;
@@ -130,13 +135,57 @@ const Phaser3ReactGame: React.FC = () => {
                 fontSize: "32px",
                 color: "#000",
             });
+
+            // Mobile Controls
+            const leftButton = this.add
+                .text(50, 500, "⬅", {
+                    fontSize: "32px",
+                    backgroundColor: "#000",
+                    color: "#fff",
+                })
+                .setInteractive()
+                .on("pointerdown", () => {
+                    player.setVelocityX(-160);
+                    player.anims.play("left", true);
+                })
+                .on("pointerup", () => {
+                    player.setVelocityX(0);
+                    player.anims.play("turn");
+                });
+
+            const rightButton = this.add
+                .text(700, 500, "➡", {
+                    fontSize: "32px",
+                    backgroundColor: "#000",
+                    color: "#fff",
+                })
+                .setInteractive()
+                .on("pointerdown", () => {
+                    player.setVelocityX(160);
+                    player.anims.play("right", true);
+                })
+                .on("pointerup", () => {
+                    player.setVelocityX(0);
+                    player.anims.play("turn");
+                });
+
+            const jumpButton = this.add
+                .text(375, 500, "⬆", {
+                    fontSize: "32px",
+                    backgroundColor: "#000",
+                    color: "#fff",
+                })
+                .setInteractive()
+                .on("pointerdown", () => {
+                    if (player.body?.touching.down) player.setVelocityY(-330);
+                });
         }
 
         function update() {
-            if (cursors.left?.isDown) {
+            if (cursors.left?.isDown || leftPressed) {
                 player.setVelocityX(-160);
                 player.anims.play("left", true);
-            } else if (cursors.right?.isDown) {
+            } else if (cursors.right?.isDown || rightPressed) {
                 player.setVelocityX(160);
                 player.anims.play("right", true);
             } else {
@@ -144,7 +193,10 @@ const Phaser3ReactGame: React.FC = () => {
                 player.anims.play("turn");
             }
 
-            if (cursors.up?.isDown && player.body?.touching.down) {
+            if (
+                cursors.up?.isDown ||
+                (jumpPressed && player.body?.touching.down)
+            ) {
                 player.setVelocityY(-330);
             }
         }
@@ -208,6 +260,7 @@ const Phaser3ReactGame: React.FC = () => {
                     zIndex: -1,
                 }}
             />
+            {/* using the button style from button config */}
             {showButton && (
                 <div
                     style={{
